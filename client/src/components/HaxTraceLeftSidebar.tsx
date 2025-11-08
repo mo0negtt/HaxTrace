@@ -44,7 +44,7 @@ export const HaxTraceLeftSidebar = () => {
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "iLoveHax.hbs";
+    link.download = "HaxTrace.hbs";
     link.click();
     URL.revokeObjectURL(url);
   };
