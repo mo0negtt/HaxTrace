@@ -67,10 +67,10 @@ interface HaxTraceProviderProps {
 
 const defaultMap: HaxMap = {
   id: '1',
-  name: 'iLoveHax',
+  name: 'HaxTrace',
   width: 400,
   height: 200,
-  bg: { color: '#0f0f0fff' },
+  bg: { color: '000000ff' },
   vertexes: [
   ],
   segments: [
@@ -407,7 +407,7 @@ export const HaxTraceProvider = ({ children }: HaxTraceProviderProps) => {
     
     return {
       ...map,
-      name: 'iLoveHax',
+      name: 'HaxTrace',
       bg: {
         ...map.bg,
         color: bgColor,
