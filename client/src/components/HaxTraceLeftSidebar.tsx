@@ -247,7 +247,7 @@ export const HaxTraceLeftSidebar = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    const win = window.open("https://discord.gg/Jxg3RGDQsj", "_blank");
+                    const win = window.open("https://discord.gg/", "_blank");
                     if (win) {
                       win.opener = null;
                     }
