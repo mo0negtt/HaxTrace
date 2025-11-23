@@ -30,6 +30,7 @@ interface HaxTraceContextType {
   addVertex: (x: number, y: number) => void;
   addSegment: (v0: number, v1: number, color?: string) => void;
   selectVertex: (index: number, multiSelect?: boolean) => void;
+  selectAllVertices: () => void;
   clearVertexSelection: () => void;
   selectSegment: (index: number, multiSelect?: boolean) => void;
   clearSegmentSelection: () => void;
@@ -40,6 +41,8 @@ interface HaxTraceContextType {
   deleteVertex: (index: number) => void;
   duplicateVertex: (index: number) => void;
   duplicateSegment: (index: number) => void;
+  duplicateSelectedVertices: () => void;
+  duplicateSelectedSegments: () => void;
   setBackgroundImage: (dataURL: string) => void;
   updateBackgroundImage: (bgImage: BackgroundImage) => void;
   removeBackgroundImage: () => void;
@@ -81,6 +84,8 @@ const defaultMap: HaxMap = {
   joints: [],
   traits: {},
   canBeStored: true,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
 
 export const HaxTraceProvider = ({ children }: HaxTraceProviderProps) => {
@@ -191,6 +196,11 @@ export const HaxTraceProvider = ({ children }: HaxTraceProviderProps) => {
       }
     }
   }, [currentTool, addSegment, segmentColor]);
+
+  const selectAllVertices = useCallback(() => {
+    const allIndices = map.vertexes.map((_, index) => index);
+    setSelectedVertices(allIndices);
+  }, [map.vertexes]);
 
   const clearVertexSelection = useCallback(() => {
     setSelectedVertices([]);
@@ -309,6 +319,44 @@ export const HaxTraceProvider = ({ children }: HaxTraceProviderProps) => {
     };
     saveHistory(newMap);
   }, [map, saveHistory]);
+
+  const duplicateSelectedVertices = useCallback(() => {
+    if (selectedVertices.length === 0) return;
+    
+    const newVertices = selectedVertices.map(index => {
+      const vertex = map.vertexes[index];
+      return { x: vertex.x + 20, y: vertex.y + 20 };
+    });
+    
+    const newMap = {
+      ...map,
+      vertexes: [...map.vertexes, ...newVertices],
+    };
+    saveHistory(newMap);
+    
+    const startIndex = map.vertexes.length;
+    const newSelection = newVertices.map((_, i) => startIndex + i);
+    setSelectedVertices(newSelection);
+  }, [map, selectedVertices, saveHistory]);
+
+  const duplicateSelectedSegments = useCallback(() => {
+    if (selectedSegments.length === 0) return;
+    
+    const newSegments = selectedSegments.map(index => {
+      const segment = map.segments[index];
+      return { ...segment };
+    });
+    
+    const newMap = {
+      ...map,
+      segments: [...map.segments, ...newSegments],
+    };
+    saveHistory(newMap);
+    
+    const startIndex = map.segments.length;
+    const newSelection = newSegments.map((_, i) => startIndex + i);
+    setSelectedSegments(newSelection);
+  }, [map, selectedSegments, saveHistory]);
 
   const setBackgroundImage = useCallback((dataURL: string) => {
     const newMap = {
@@ -508,6 +556,7 @@ export const HaxTraceProvider = ({ children }: HaxTraceProviderProps) => {
     addVertex,
     addSegment,
     selectVertex,
+    selectAllVertices,
     clearVertexSelection,
     selectSegment,
     clearSegmentSelection,
@@ -518,6 +567,8 @@ export const HaxTraceProvider = ({ children }: HaxTraceProviderProps) => {
     deleteVertex,
     duplicateVertex,
     duplicateSegment,
+    duplicateSelectedVertices,
+    duplicateSelectedSegments,
     setBackgroundImage,
     updateBackgroundImage,
     removeBackgroundImage,

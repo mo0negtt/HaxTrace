@@ -10,7 +10,7 @@ import {
   ExternalLink,
   Settings
 } from 'lucide-react';
-import { SiDiscord } from 'react-icons/si';
+import { SiTiktok } from 'react-icons/si';
 import { useRef, useState } from 'react';
 
 export const HaxTraceTopBar = () => {
@@ -125,15 +125,15 @@ export const HaxTraceTopBar = () => {
 
       <div className="flex items-center gap-2">
         <Button
-          data-testid="button-discord"
+          data-testid="button-tiktok"
           size="sm"
           variant="default"
-          onClick={() => window.open('https://discord.gg/Jxg3RGDQsj', '_blank')}
-          title="Join Discord Server"
-          className="h-9 rounded-lg bg-[#5865F2] hover:bg-[#4752C4] text-white border-0"
+          onClick={() => window.open('https://www.tiktok.com/@mo0negtt', '_blank')}
+          title="Visit TikTok"
+          className="h-9 rounded-lg bg-black hover:bg-gray-900 text-white border-0"
         >
-          <SiDiscord className="w-4 h-4 mr-2" />
-          Discord
+          <SiTiktok className="w-4 h-4 mr-2" />
+          TikTok
         </Button>
         <Button
           data-testid="button-open-haxpuck"

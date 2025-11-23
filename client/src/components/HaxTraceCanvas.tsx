@@ -18,6 +18,7 @@ export const HaxTraceCanvas = () => {
   const {
     map,
     currentTool,
+    setCurrentTool,
     selectedVertices,
     selectedSegments,
     hoveredVertex,
@@ -25,6 +26,7 @@ export const HaxTraceCanvas = () => {
     addVertex,
     selectVertex,
     selectSegment,
+    selectAllVertices,
     clearSegmentSelection,
     clearVertexSelection,
     updateVertex,
@@ -36,11 +38,15 @@ export const HaxTraceCanvas = () => {
     deleteVertex,
     duplicateVertex,
     duplicateSegment,
+    duplicateSelectedVertices,
+    duplicateSelectedSegments,
     deleteSelectedSegments,
     deleteSelectedVertices,
   } = useHaxTrace();
 
   const [isDraggingVertex, setIsDraggingVertex] = useState<number | null>(null);
+  const [dragStartPositions, setDragStartPositions] = useState<Map<number, { x: number; y: number }>>(new Map());
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(null);
   const [contextMenuTarget, setContextMenuTarget] = useState<{ type: 'vertex' | 'segment'; index: number } | null>(null);
   const [marqueeStart, setMarqueeStart] = useState<{ x: number; y: number } | null>(null);
   const [marqueeCurrent, setMarqueeCurrent] = useState<{ x: number; y: number } | null>(null);
@@ -143,11 +149,23 @@ export const HaxTraceCanvas = () => {
     const y = e.clientY - rect.top;
 
     const vertexIndex = renderer.getVertexAt(x, y, map.vertexes);
+    const isCtrlPressed = e.ctrlKey || e.metaKey;
     
     if (e.button === 2) {
       if (vertexIndex !== null) {
         setContextMenuTarget({ type: 'vertex', index: vertexIndex });
-        setIsDraggingVertex(vertexIndex);
+        if (selectedVertices.includes(vertexIndex) && selectedVertices.length > 1) {
+          const world = renderer.screenToWorld(x, y);
+          const positions = new Map<number, { x: number; y: number }>();
+          selectedVertices.forEach(idx => {
+            positions.set(idx, { x: map.vertexes[idx].x, y: map.vertexes[idx].y });
+          });
+          setDragStartPositions(positions);
+          setDragOffset({ x: world.x, y: world.y });
+          setIsDraggingVertex(vertexIndex);
+        } else {
+          setIsDraggingVertex(vertexIndex);
+        }
         return;
       }
       
@@ -162,22 +180,42 @@ export const HaxTraceCanvas = () => {
     }
 
     if (e.button === 0) {
-      if (currentTool === 'pan') {
+      if (vertexIndex !== null && isCtrlPressed) {
+        selectVertex(vertexIndex, true);
+        return;
+      }
+
+      const segmentIndex = renderer.getSegmentAt(x, y, map.segments, map.vertexes);
+      if (segmentIndex !== null && isCtrlPressed) {
+        selectSegment(segmentIndex, true);
+        return;
+      }
+
+      if (currentTool === 'pan' && !isCtrlPressed) {
         renderer.startPan(x, y);
         return;
       }
 
       if (currentTool === 'vertex') {
         if (vertexIndex !== null) {
-          const multiSelect = e.shiftKey || e.ctrlKey;
+          const multiSelect = e.shiftKey || isCtrlPressed;
           selectVertex(vertexIndex, multiSelect);
           if (!multiSelect) {
+            setIsDraggingVertex(vertexIndex);
+          } else if (selectedVertices.includes(vertexIndex)) {
+            const world = renderer.screenToWorld(x, y);
+            const positions = new Map<number, { x: number; y: number }>();
+            selectedVertices.forEach(idx => {
+              positions.set(idx, { x: map.vertexes[idx].x, y: map.vertexes[idx].y });
+            });
+            setDragStartPositions(positions);
+            setDragOffset({ x: world.x, y: world.y });
             setIsDraggingVertex(vertexIndex);
           }
           return;
         }
         
-        if (!e.shiftKey && !e.ctrlKey) {
+        if (!e.shiftKey && !isCtrlPressed) {
           const world = renderer.screenToWorld(x, y);
           addVertex(Math.round(world.x), Math.round(world.y));
           clearVertexSelection();
@@ -194,15 +232,14 @@ export const HaxTraceCanvas = () => {
           return;
         }
 
-        const segmentIndex = renderer.getSegmentAt(x, y, map.segments, map.vertexes);
         if (segmentIndex !== null) {
-          selectSegment(segmentIndex, e.shiftKey || e.ctrlKey);
-        } else if (!e.shiftKey && !e.ctrlKey) {
+          selectSegment(segmentIndex, e.shiftKey || isCtrlPressed);
+        } else if (!e.shiftKey && !isCtrlPressed) {
           clearSegmentSelection();
         }
       }
     }
-  }, [currentTool, map, addVertex, selectVertex, selectSegment, clearSegmentSelection, clearVertexSelection]);
+  }, [currentTool, map, selectedVertices, addVertex, selectVertex, selectSegment, clearSegmentSelection, clearVertexSelection]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const renderer = rendererRef.current;
@@ -221,7 +258,16 @@ export const HaxTraceCanvas = () => {
     }
 
     if (isDraggingVertex !== null) {
-      updateVertex(isDraggingVertex, Math.round(world.x), Math.round(world.y));
+      if (dragStartPositions.size > 0 && dragOffset) {
+        const deltaX = world.x - dragOffset.x;
+        const deltaY = world.y - dragOffset.y;
+        
+        dragStartPositions.forEach((startPos, idx) => {
+          updateVertex(idx, Math.round(startPos.x + deltaX), Math.round(startPos.y + deltaY));
+        });
+      } else {
+        updateVertex(isDraggingVertex, Math.round(world.x), Math.round(world.y));
+      }
       render();
       return;
     }
@@ -236,7 +282,7 @@ export const HaxTraceCanvas = () => {
     if (vertexIndex !== hoveredVertex) {
       setHoveredVertex(vertexIndex);
     }
-  }, [isDraggingVertex, map, hoveredVertex, setHoveredVertex, updateVertex, render, marqueeStart, setMousePos]);
+  }, [isDraggingVertex, dragStartPositions, dragOffset, map, hoveredVertex, setHoveredVertex, updateVertex, render, marqueeStart, setMousePos]);
 
   const handleMouseUp = useCallback(() => {
     const renderer = rendererRef.current;
@@ -271,6 +317,8 @@ export const HaxTraceCanvas = () => {
     }
 
     setIsDraggingVertex(null);
+    setDragStartPositions(new Map());
+    setDragOffset(null);
     renderer.endPan();
   }, [marqueeStart, marqueeCurrent, map.vertexes, selectedVertices, selectVertex]);
 
@@ -294,7 +342,37 @@ export const HaxTraceCanvas = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+        e.preventDefault();
+        selectAllVertices();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        if (selectedVertices.length > 0) {
+          duplicateSelectedVertices();
+        } else if (selectedSegments.length > 0) {
+          duplicateSelectedSegments();
+        }
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        if (selectedVertices.length > 0) {
+          deleteSelectedVertices();
+        } else if (selectedSegments.length > 0) {
+          deleteSelectedSegments();
+        }
+      } else if (e.key === 'v' || e.key === 'V' || e.key === '2') {
+        e.preventDefault();
+        setCurrentTool('vertex');
+      } else if (e.key === 's' || e.key === 'S' || e.key === '3') {
+        e.preventDefault();
+        setCurrentTool('segment');
+      } else if (e.key === 'p' || e.key === 'P' || e.key === '1') {
+        e.preventDefault();
+        setCurrentTool('pan');
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault();
       } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
         e.preventDefault();
@@ -303,7 +381,7 @@ export const HaxTraceCanvas = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [selectAllVertices, selectedVertices, selectedSegments, duplicateSelectedVertices, duplicateSelectedSegments, deleteSelectedVertices, deleteSelectedSegments, setCurrentTool]);
 
   return (
     <ContextMenu>

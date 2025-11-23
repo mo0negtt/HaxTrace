@@ -20,7 +20,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { SiDiscord } from "react-icons/si";
+import { SiTiktok } from "react-icons/si";
 
 export const HaxTraceLeftSidebar = () => {
   const {
@@ -208,19 +208,23 @@ export const HaxTraceLeftSidebar = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
-                  <span>Vertex and segment tools</span>
+                  <span>Keyboard shortcuts: 1/P (Pan), 2/V (Vertex), 3/S (Segment)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
-                  <span>Curved segments support</span>
+                  <span>Multi-selection and batch operations (Ctrl+A, Ctrl+D)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
-                  <span>Background image overlay</span>
+                  <span>Curved segments support with live editing</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
-                  <span>Import/Export .hbs files</span>
+                  <span>Background image overlay with opacity control</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Import/Export .hbs files with undo/redo</span>
                 </li>
               </ul>
             </div>
@@ -247,16 +251,16 @@ export const HaxTraceLeftSidebar = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    const win = window.open("https://discord.gg/", "_blank");
+                    const win = window.open("https://www.tiktok.com/@mo0negtt", "_blank");
                     if (win) {
                       win.opener = null;
                     }
                   }}
                   className="flex items-center justify-start gap-2 h-9"
-                  data-testid="button-discord"
+                  data-testid="button-tiktok"
                 >
-                  <SiDiscord className="w-4 h-4" />
-                  Join Discord
+                  <SiTiktok className="w-4 h-4" />
+                  Visit TikTok
                 </Button>
               </div>
             </div>
