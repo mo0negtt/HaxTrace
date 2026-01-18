@@ -1,6 +1,8 @@
 # 🪄 HaxTrace
 > **Vectorized logos and images for Haxball maps**
- 
+
+---
+
 <img width="1296" height="684" alt="HaxTrace-1" src="https://github.com/user-attachments/assets/bc15d5df-f47a-4012-8cf3-f5fe4bda2126" />
 
 **HaxTrace** es una herramienta especializada para creadores de mapas de Haxball que permite transformar imágenes, logos e iconos en geometría nativa del juego (vertex y segments). 
