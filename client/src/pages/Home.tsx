@@ -67,9 +67,9 @@ export default function Home() {
               <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                 <Terminal className="h-8 w-8 text-primary shadow-[0_0_15px_rgba(var(--primary),0.5)]" />
               </div>
-              <h3 className="text-2xl font-black mb-4 text-white">Real-time Code Gen</h3>
+              <h3 className="text-2xl font-black mb-4 text-white">Draw</h3>
               <p className="text-muted-foreground text-lg leading-relaxed font-medium">
-                See the JSON code update instantly as you modify your vector graph. No more manual coordinates.
+                Draw any logo, image, or icon to complement your Haxball maps.
               </p>
             </div>
 
