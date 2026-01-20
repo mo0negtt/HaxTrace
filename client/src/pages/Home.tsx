@@ -62,19 +62,6 @@ export default function Home() {
 
       {/* Features Grid */}
       <section className="py-24 px-6 border-t border-white/5 bg-gradient-to-b from-[#080808] to-[#060606]">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-10 rounded-[2.5rem] border border-white/5 bg-[#0a0a0a] hover:border-primary/40 transition-all duration-500 group relative overflow-hidden">
-              <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/[0.02] transition-colors" />
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                <MousePointer2 className="h-8 w-8 text-primary shadow-[0_0_15px_rgba(var(--primary),0.5)]" />
-              </div>
-              <h3 className="text-2xl font-black mb-4 text-white">Visual Node System</h3>
-              <p className="text-muted-foreground text-lg leading-relaxed font-medium">
-                Intuitive drag-and-drop interface inspired by professional vector software. Build with precision.
-              </p>
-            </div>
-
             <div className="p-10 rounded-[2.5rem] border border-white/5 bg-[#0a0a0a] hover:border-primary/40 transition-all duration-500 group relative overflow-hidden">
               <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/[0.02] transition-colors" />
               <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
