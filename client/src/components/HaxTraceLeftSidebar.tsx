@@ -236,7 +236,7 @@ export const HaxTraceLeftSidebar = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    const win = window.open("https://mo0negtt.github.io/haxpuck/", "_blank");
+                    const win = window.open("https://mo0negtt.github.io/HaxPuck/", "_blank");
                     if (win) {
                       win.opener = null;
                     }
