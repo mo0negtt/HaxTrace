@@ -11,6 +11,8 @@ import {
   Upload,
   Info,
   ExternalLink,
+  FilePlus,
+  Keyboard,
 } from "lucide-react";
 import { useRef, useState } from "react";
 import {
@@ -32,10 +34,12 @@ export const HaxTraceLeftSidebar = () => {
     canRedo,
     importMap,
     exportMap,
+    newProject,
   } = useHaxTrace();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [creditsOpen, setCreditsOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
   const handleExport = () => {
     const exportedMap = exportMap();
@@ -132,6 +136,16 @@ export const HaxTraceLeftSidebar = () => {
           >
             <Redo2 className="w-4 h-4" />
           </Button>
+          <Button
+            data-testid="button-new-project"
+            size="icon"
+            variant="ghost"
+            onClick={newProject}
+            title="New Project"
+            className="h-10 w-10 text-orange-500 hover:text-orange-600 hover:bg-orange-500/10"
+          >
+            <FilePlus className="w-4 h-4" />
+          </Button>
         </div>
 
         <Separator className="w-10 my-2" />
@@ -170,7 +184,15 @@ export const HaxTraceLeftSidebar = () => {
 
         <div className="flex flex-col items-center gap-1">
           <Button
-            data-testid="button-info"
+            size="icon"
+            variant="ghost"
+            onClick={() => setShortcutsOpen(true)}
+            title="Controls & Shortcuts"
+            className="h-10 w-10"
+          >
+            <Keyboard className="w-4 h-4" />
+          </Button>
+          <Button
             size="icon"
             variant="ghost"
             onClick={() => setCreditsOpen(true)}
@@ -181,6 +203,83 @@ export const HaxTraceLeftSidebar = () => {
           </Button>
         </div>
       </div>
+
+      <Dialog open={shortcutsOpen} onOpenChange={setShortcutsOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Keyboard className="w-5 h-5" />
+              Controls & Shortcuts
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 py-2">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Tools</h4>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center text-sm">
+                    <span>Pan / Select</span>
+                    <kbd className="px-2 py-1 bg-muted rounded text-[10px] font-bold">1 / P</kbd>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span>Vertex Tool</span>
+                    <kbd className="px-2 py-1 bg-muted rounded text-[10px] font-bold">2 / V</kbd>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span>Segment Tool</span>
+                    <kbd className="px-2 py-1 bg-muted rounded text-[10px] font-bold">3 / S</kbd>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">History</h4>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center text-sm">
+                    <span>Undo</span>
+                    <kbd className="px-2 py-1 bg-muted rounded text-[10px] font-bold">Ctrl + Z</kbd>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span>Redo</span>
+                    <kbd className="px-2 py-1 bg-muted rounded text-[10px] font-bold">Ctrl + Y</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Actions</h4>
+              <div className="grid grid-cols-1 gap-1.5">
+                <div className="flex justify-between items-center text-sm">
+                  <span>Select All</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-[10px] font-bold">Ctrl + A</kbd>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span>Duplicate Selected</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-[10px] font-bold">Ctrl + D</kbd>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span>Delete Selected</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-[10px] font-bold">Del / Backspace</kbd>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span>Multi-select</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-[10px] font-bold">Shift + Click</kbd>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-2 text-sm text-muted-foreground italic leading-snug">
+              <p>• In Segment Tool, click two vertices to create a segment.</p>
+              <p>• Select segments to edit their curve values in the side panel.</p>
+              <p>• Change color of selected segments in real-time.</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={creditsOpen} onOpenChange={setCreditsOpen}>
         <DialogContent className="max-w-md">
